@@ -30,8 +30,14 @@ export default {
     },
   },
   mounted() {
-    this.map = L.map(this.id).setView([40.4165, -3.70256], 13);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(this.map);
+    this.map = L.map(this.id).setView([0, 0], 3);
+    L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      }
+    ).addTo(this.map);
     const drawControl = new L.Control.Draw({
       draw: {
         circlemarker: false,

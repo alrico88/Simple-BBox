@@ -1,16 +1,11 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import shortid from 'shortid';
-import VuexPersistence from 'vuex-persist';
 import area from '@turf/area';
 import {processNumber} from 'number-helper-functions';
 import bbox from '@turf/bbox';
 import bboxPolygon from '@turf/bbox-polygon';
 import {featureCollection, feature} from '@turf/helpers';
-
-const vuexLocal = new VuexPersistence({
-  storage: window.localStorage,
-});
 
 Vue.use(Vuex);
 
@@ -26,7 +21,15 @@ export default new Vuex.Store({
       return state.polygons.map((d) => d.id);
     },
     getFullBBox(state) {
-      return state.polygons.length > 0 ? bbox(featureCollection(state.polygons.map((d) => feature(d.geojson)))) : [];
+      return state.polygons.length > 0
+        ? bbox(featureCollection(state.polygons.map((d) => {
+                if (d.geojson.type !== 'Feature') {
+                  return feature(d.geojson);
+                } else {
+                  return d.geojson;
+                }
+              })))
+        : [];
     },
     getFullBBoxPolygon(state, getters) {
       const fullBBox = getters.getFullBBox;
@@ -68,5 +71,4 @@ export default new Vuex.Store({
       context.commit('updatePolygons', []);
     },
   },
-  plugins: [vuexLocal.plugin],
 });

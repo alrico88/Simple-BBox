@@ -3,30 +3,17 @@
     .row
       .col.pt-3
         h2 Simple BBox
-          span.smalltext.ml-2 By Alberto Rico
-            a.ml-2(href="https://github.com/alrico88/Simple-BBox", target="_blank")
-              i.fa.fa-github-square
     .row
       .col
-        ZoomCenterTransition(:group="true")
-          .card.mb-2(v-for="(polygon, index) of getPolygons", :key="'card_' + index", v-show="getPolygons.length > 0")
-            .card-header.p-2
-              .row.align-items-center
-                .col
-                  h5.mb-0
-                    | {{ polygon.id }}
-                .col-4.text-right
-                  p.mb-0 {{ getPolygonArea(polygon.id) }}km2
-            .card-body.p-2
-              p.mb-0
-                | {{ polygon.bbox }}
-            .card-footer.p-2
-              button.btn.btn-sm.btn-primary.mr-2(href="#", v-clipboard:copy="JSON.stringify(polygon.bbox)", v-clipboard:success="notifyClipSuccess", v-clipboard:error="notifyClipError")
-                i.fa.fa-copy
-                |  Copy to clipboard
-              button.btn.btn-sm.btn-danger.float-right(href="#", @click.prevent="deletePolygon(polygon.id)")
-                i.fa.fa-trash
-                |  Remove
+        button.btn.btn-sm.btn-secondary.mb-2(type="button", @click="addManually")
+          i.fa.fa-plus
+          |  Add manually by text
+        ZoomCenterTransition(:group="true", v-show="getPolygons.length > 0")
+          feature-card(
+            v-for="polygon of getPolygons",
+            :polygon="polygon",
+            :key="polygon.id"
+          )
         .alert.alert-primary.border-primary(v-show="getPolygons.length === 0") Draw some shapes first!
         ZoomCenterTransition
           .alert.alert-primary.border-primary(v-show="getPolygons.length > 1")
@@ -47,41 +34,42 @@
                 button.btn.btn-sm.btn-danger(href="#", @click.prevent="removeAll")
                   i.fa.fa-trash
                   |  Remove
+    hr.mt-0.mb-2
+    author-info
 </template>
 
 <script>
 import {mapGetters} from 'vuex';
 import {ZoomCenterTransition} from 'vue2-transitions';
+import {ruleOfThree} from 'math-helper-functions';
+import AddModal from './AddModal.vue';
+import FeatureCard from './FeatureCard.vue';
+import ClipboardMixin from '../mixins/clipboard';
+import AuthorInfo from './AuthorInfo.vue';
 
 export default {
   components: {
     ZoomCenterTransition,
+    FeatureCard,
+    AuthorInfo,
   },
+  mixins: [ClipboardMixin],
   computed: {
-    ...mapGetters(['getPolygons', 'getFullBBox', 'getPolygonArea']),
+    ...mapGetters(['getPolygons', 'getFullBBox']),
   },
   methods: {
-    deletePolygon(id) {
-      this.$store.dispatch('deletePolygon', id);
-    },
-    notifyClipSuccess() {
-      this.$notify({
-        group: 'clipboard',
-        title: 'Success',
-        text: 'Copied to clipboard',
-        type: 'success',
-      });
-    },
-    notifyClipError(err) {
-      this.$notify({
-        group: 'clipboard',
-        title: 'Error',
-        text: `Error copying to clipboard ${err}`,
-        type: 'danger',
-      });
-    },
     removeAll() {
       this.$store.dispatch('deleteAllPolygons');
+    },
+    addManually() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      this.$dlg.modal(AddModal, {
+        title: 'Add shape by text',
+        width: ruleOfThree(100, width, 50),
+        height: ruleOfThree(100, height, 50),
+        params: {},
+      });
     },
   },
 };
