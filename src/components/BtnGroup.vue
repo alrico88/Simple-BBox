@@ -1,18 +1,14 @@
-<!--
-  - Copyright (c) 2020 Satya Insights S.L. - All Rights Reserved.
-  - Unauthorized copying of this file, via any medium is strictly prohibited.
-  - Proprietary and confidential.
-  -->
-
 <template lang="pug">
-  .btn-group(role='group')
-    button.btn.btn-sm.btn-secondary(
-      v-for="item of items"
-      type='button',
-      v-bind:class="{active: selected === item.value}",
-      v-on:click.prevent="selected = item.value"
-    ) {{ item.text }}
-    slot
+b-button-group.d-flex
+  b-button.w-100(
+    size="sm",
+    variant="secondary",
+    v-for="item of items",
+    :key="item.value",
+    v-bind:class="{ active: selected === item.value }",
+    v-on:click.prevent="selected = item.value"
+  ) {{ item.text }}
+  slot
 </template>
 
 <script>
@@ -39,6 +35,3 @@ export default {
   },
 };
 </script>
-
-<style>
-</style>

@@ -1,18 +1,17 @@
 import Vue from 'vue';
 import App from './App.vue';
 import store from './store';
-import Notifications from 'vue-notification';
 import VueClipboard from 'vue-clipboard2';
-import vDialogs from 'v-dialogs';
+import {BootstrapVue, BootstrapVueIcons, VBModalPlugin} from 'bootstrap-vue';
+
+import './assets/main.scss';
 
 Vue.config.productionTip = false;
 
-import 'bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-Vue.use(Notifications);
 Vue.use(VueClipboard);
-Vue.use(vDialogs);
+Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
+Vue.use(VBModalPlugin);
 
 new Vue({
   store,

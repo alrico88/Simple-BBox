@@ -6,7 +6,6 @@
     <div class="row">
       <Map />
       <Result />
-      <notifications group="clipboard" />
     </div>
   </div>
 </template>
@@ -23,3 +22,10 @@ export default {
   },
 };
 </script>
+
+<style>
+#app {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+</style>

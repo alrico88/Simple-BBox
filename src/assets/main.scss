@@ -1,0 +1,49 @@
+@import url('https://cdn.jsdelivr.net/npm/@xz/fonts@1/serve/fira-sans.min.css');
+$font-family-base: 'Fira Sans', Helvetica, Arial, sans-serif;
+
+$light-blue: #f2f1f7;
+$light-yellow: #fcf4ec;
+$regular-yellow: #ffe9d7;
+$strong-yellow: #d83400;
+$strong-blue: #160f4a;
+
+$font-size-base: 16;
+$body-bg: $light-yellow;
+$primary: $strong-blue;
+$warning: $regular-yellow;
+$success: #729210;
+$card-bg: $light-blue;
+$modal-content-bg: $light-yellow;
+$modal-header-border-color: $regular-yellow;
+
+@import 'node_modules/bootstrap/scss/bootstrap.scss';
+@import 'node_modules/bootstrap-vue/src/index.scss';
+
+.bg-blue {
+  background-color: $light-blue;
+}
+
+.bg-yellow {
+  background-color: $regular-yellow;
+  color: $strong-yellow;
+}
+
+.text-yellow {
+  color: $strong-yellow;
+}
+
+.btn-warning {
+  background-color: $strong-yellow;
+  border-color: darken($strong-yellow, 1);
+  color: white;
+
+  &:hover {
+    background-color: darken($strong-yellow, 1);
+    border-color: darken($strong-yellow, 2);
+    color: white;
+  }
+}
+
+body {
+  color: $primary;
+}

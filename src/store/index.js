@@ -3,11 +3,45 @@ import Vuex from 'vuex';
 import shortid from 'shortid';
 import area from '@turf/area';
 import {processNumber} from 'number-helper-functions';
-import bbox from '@turf/bbox';
 import bboxPolygon from '@turf/bbox-polygon';
-import {featureCollection, feature} from '@turf/helpers';
+import {getGeoJSONBBox} from 'bbox-helper-functions';
+import VuexPersistence from 'vuex-persist';
+import {parseFromWK} from 'wkt-parser-helper';
+
+const vuexLocal = new VuexPersistence({
+  storage: window.localStorage,
+});
 
 Vue.use(Vuex);
+
+class FeatureCollection {
+  constructor(features = []) {
+    this.type = 'FeatureCollection';
+    this.features = features;
+  }
+}
+
+class Feature {
+  constructor(geometry) {
+    this.type = 'Feature';
+    this.geometry = geometry;
+    this.properties = {};
+  }
+}
+
+class GeoJSONItem {
+
+  /**
+   * Creates an instance of WktItem
+   * @param {geojson} geojson
+   */
+  constructor(geojson) {
+    this.id = shortid();
+    this.geojson = geojson;
+    this.bbox = getGeoJSONBBox(geojson);
+    this.bboxPolygon = bboxPolygon(this.bbox);
+  }
+}
 
 export default new Vuex.Store({
   state: {
@@ -21,22 +55,26 @@ export default new Vuex.Store({
       return state.polygons.map((d) => d.id);
     },
     getFullBBox(state) {
-      return state.polygons.length > 0
-        ? bbox(featureCollection(state.polygons.map((d) => {
-                if (d.geojson.type !== 'Feature') {
-                  return feature(d.geojson);
-                } else {
-                  return d.geojson;
-                }
-              })))
-        : [];
+      if (state.polygons.length > 0) {
+        return getGeoJSONBBox(new FeatureCollection(state.polygons.map((d) => {
+          if (d.geojson.type !== 'Feature') {
+            return new Feature(d.geojson);
+          } else {
+            return d.geojson;
+          }
+        })));
+      } else {
+        return [];
+      }
     },
-    getFullBBoxPolygon(state, getters) {
+    getFullBBoxPolygon(_, getters) {
       const fullBBox = getters.getFullBBox;
+
       return fullBBox.length > 0 ? bboxPolygon(fullBBox) : null;
     },
     getPolygonArea: (state) => (id) => {
       const obj = state.polygons.find((d) => d.id === id);
+
       return processNumber(area(obj.geojson) / 1000000);
     },
   },
@@ -52,17 +90,15 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    addPolygon(context, GeoJSON) {
-      const asBBox = bbox(GeoJSON);
-      context.commit('addToPolygons', {
-        id: shortid(),
-        geojson: GeoJSON,
-        bbox: asBBox,
-        bboxPolygon: bboxPolygon(asBBox),
-      });
+    addPolygon(context, geojson) {
+      context.commit('addToPolygons', new GeoJSONItem(geojson));
+    },
+    addWkt(context, wkt) {
+      context.commit('addToPolygons', new GeoJSONItem(parseFromWK(wkt)));
     },
     deletePolygon(context, id) {
       const pos = context.getters.getPolygonIds.indexOf(id);
+
       if (pos !== -1) {
         context.commit('deleteFromPolygons', pos);
       }
@@ -71,4 +107,5 @@ export default new Vuex.Store({
       context.commit('updatePolygons', []);
     },
   },
+  plugins: [vuexLocal.plugin],
 });

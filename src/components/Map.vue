@@ -1,17 +1,21 @@
 <template lang="pug">
-  .col-8.vh-100.px-0
-    .h-100(:id="id")
+.col-8.vh-100.px-0
+  .h-100(:id="id")
 </template>
 
 <script>
-import uuid from 'uuid/v4';
+import uniqueId from 'lodash/uniqueId';
 import {mapGetters} from 'vuex';
 import circle from '@turf/circle';
+
+const tileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012',
+});
 
 export default {
   data() {
     return {
-      id: uuid(),
+      id: uniqueId('mapDiv'),
       layers: {
         shapes: null,
         fullBBox: null,
@@ -31,13 +35,7 @@ export default {
   },
   mounted() {
     this.map = L.map(this.id).setView([0, 0], 3);
-    L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-      {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      }
-    ).addTo(this.map);
+    tileLayer.addTo(this.map);
     const drawControl = new L.Control.Draw({
       draw: {
         circlemarker: false,
