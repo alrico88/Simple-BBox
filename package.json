@@ -7,6 +7,9 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
+  "repository": {
+    "url": "https://github.com/alrico88/Simple-BBox"
+  },
   "dependencies": {
     "@turf/area": "^6.0.1",
     "@turf/bbox-polygon": "^6.0.1",
