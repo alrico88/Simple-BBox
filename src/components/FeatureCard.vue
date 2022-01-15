@@ -10,12 +10,14 @@ b-card.mb-2(no-body)
     b-form-input.bg-white(readonly, type="text", v-model="text")
   b-card-footer.p-2
     b-button.mr-2(
+      size="sm",
       variant="primary",
       v-clipboard:copy="text",
       v-clipboard:success="notifyClipSuccess",
       v-clipboard:error="notifyClipError"
     ) #[b-icon-clipboard] Copy to clipboard
     b-button.float-right(
+      size="sm",
       variant="danger",
       @click="deletePolygon(polygon.id)"
     ) #[b-icon-trash] Remove

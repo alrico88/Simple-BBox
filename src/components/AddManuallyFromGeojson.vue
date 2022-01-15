@@ -1,7 +1,6 @@
 <template lang="pug">
 b-form.mt-3(@submit.prevent='createPolygonFromText')
   b-form-group(
-    label='Enter the GeoJSON representation of a geometry here',
     :invalid-feedback='error',
     valid-feedback='Valid GeoJSON'
   )
@@ -9,18 +8,29 @@ b-form.mt-3(@submit.prevent='createPolygonFromText')
       v-model='geojson',
       :state='isValid',
       rows='4',
-      max-rows='20'
+      max-rows='20',
+      @drop.prevent="handleDrop",
+      @dragover.prevent,
+      placeholder="Paste a GeoJSON representation of a geometry here or drag and drop a file to this box"
     )
-  b-button(type='submit', variant='success', block) #[b-icon-plus] Add GeoJSON
+  b-button(
+    type='submit',
+    variant='success',
+    :disabled="!hasEnteredText",
+    block
+  ) #[b-icon-plus] Add GeoJSON
 </template>
 
 <script>
 import {validateGeoJSON} from '@/helpers/validators';
 import {mapActions} from 'vuex';
 import debounce from 'lodash/debounce';
+import {readAsText} from 'promise-file-reader';
+import ToastMixin, {toastVariants} from '../mixins/ToastMixin';
 
 export default {
   name: 'AddManuallyFromGeojson',
+  mixins: [ToastMixin],
   data() {
     return {
       geojson: '',
@@ -76,6 +86,13 @@ export default {
         this.error = '';
       }
     }, 500),
+    async handleDrop(e) {
+      try {
+        this.geojson = await readAsText(e.dataTransfer.files[0]);
+      } catch (_) {
+        this.showToast('Error', 'Error loading file', toastVariants.ERROR);
+      }
+    },
   },
 };
 </script>

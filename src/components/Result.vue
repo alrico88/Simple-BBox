@@ -10,7 +10,7 @@
         type="button",
         @click="addManually",
         block
-      ) #[b-icon-plus] Add shape by text
+      ) #[b-icon-plus] Add shape manually
       ZoomCenterTransition(:group="true", v-show="getPolygons.length > 0")
         feature-card(
           v-for="polygon of getPolygons",
@@ -29,6 +29,7 @@
           .row
             .col
               b-button.mr-2(
+                size="sm",
                 variant="primary",
                 v-clipboard:copy="JSON.stringify(getFullBBox)",
                 v-clipboard:success="notifyClipSuccess",
@@ -40,7 +41,7 @@
             .col
               p.mb-0 Remove all drawn features at once
             .col-4.text-right
-              b-button(variant="danger", @click="removeAll") #[b-icon-trash] Remove
+              b-button(size="sm", variant="danger", @click="removeAll") #[b-icon-trash] Remove
   hr.mt-0.mb-2
   author-info
   b-modal#manualAddModal(

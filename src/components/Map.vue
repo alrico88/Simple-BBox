@@ -1,5 +1,5 @@
 <template lang="pug">
-.col-8.vh-100.px-0
+.col-lg-8.col-md-7.col-6.vh-100.px-0
   .h-100(:id="id")
 </template>
 
@@ -64,6 +64,10 @@ export default {
     if (this.getFullBBoxPolygon !== null) {
       this.drawFullBBox(this.getFullBBoxPolygon);
     }
+
+    setTimeout(() => {
+      this.map.invalidateSize();
+    }, 100);
   },
   methods: {
     removeDrawn(layer) {
